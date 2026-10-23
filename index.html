@@ -5,65 +5,93 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Minhas Finanças</title>
 <style>
-:root{--bg:#f4f4f4;--panel:#fff;--ink:#333;--mut:#666;--line:#ddd;--inp:#fff;--g:#28a745;--b:#0d6efd;--w:#ffc107;--r:#dc3545;--sav:#6a5acd}
-@media (prefers-color-scheme:dark){:root{--bg:#1e1e2f;--panel:#2a2a40;--ink:#f1f1f1;--mut:#aaa;--line:#44445c;--inp:#1e1e2f}}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink);padding:20px}
-header{text-align:center;margin-bottom:28px}h1{margin:0 0 6px;font-size:2em}.sub{color:var(--mut);margin:0}
-.container{display:flex;flex-wrap:wrap;gap:24px;max-width:1400px;margin:auto}
-.box{flex:1 1 360px;background:var(--panel);padding:22px;border-radius:16px;box-shadow:0 4px 10px #0000000d;min-width:0}
-h2{font-size:1.2em;margin:24px 0 10px}.box>h2:first-child,#conta h2{margin-top:0}
-label{display:block;font-size:.9em;color:var(--mut);margin-bottom:4px}
-input,select{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid var(--line);background:var(--inp);color:var(--ink);font:inherit}
-input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--b);outline-offset:2px}
-button{padding:10px 14px;border:0;border-radius:8px;background:var(--g);color:#fff;font:inherit;cursor:pointer}
+:root{--bg:#0a0a0a;--panel:#141414;--ink:#f2f2f2;--mut:#9a9a9a;--line:#262626;--inp:#0f0f0f;--g:#d7ff3a;--b:#6ea8ff;--w:#ffc933;--r:#ff5d4d;--sav:#b79cff}
+*{box-sizing:border-box}[hidden]{display:none!important}html{scroll-behavior:smooth}
+body{margin:0;font-family:"Segoe UI",Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:0 16px 48px;line-height:1.5}
+.top{position:sticky;top:12px;z-index:5;max-width:940px;margin:12px auto 0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 22px;background:#101010e8;border:1px solid var(--line);border-radius:999px;backdrop-filter:blur(8px)}
+.brand{font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.brand i{width:12px;height:12px;border-radius:50%;background:var(--g);display:inline-block}
+.navg{display:flex;align-items:center;gap:8px}.navg a{color:var(--mut);text-decoration:none;padding:8px 10px}.navg a:hover{color:var(--ink)}
+#email-atual{color:var(--mut);font-size:.9rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hero{text-align:center;max-width:860px;margin:72px auto 36px;padding:0 6px}
+.hero h1{font-size:clamp(2.2rem,7vw,4.3rem);line-height:1.05;letter-spacing:-.035em;margin:0 0 18px}
+.hero p{color:var(--mut);font-size:1.1rem;max-width:56ch;margin:0 auto 28px}
+.vant{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:980px;margin:0 auto 44px}
+.vant div{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
+.vant b{display:block;margin-bottom:6px}.vant span{color:var(--mut);font-size:.92rem}
+#conta{max-width:440px;margin:0 auto 60px;background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:24px}
+#conta h2{margin:0 0 14px}
+.apptitle{max-width:1400px;margin:36px auto 18px;padding:0 4px}.apptitle h1{margin:0 0 4px;font-size:2rem;letter-spacing:-.03em}
+.sub{color:var(--mut);margin:0}
+.container{display:flex;flex-wrap:wrap;gap:20px;max-width:1400px;margin:auto}
+.box{flex:1 1 360px;background:var(--panel);border:1px solid var(--line);padding:22px;border-radius:24px;min-width:0}
+h2{font-size:1.15rem;margin:26px 0 10px;letter-spacing:-.01em}.box>h2:first-child{margin-top:0}
+label{display:block;font-size:.88em;color:var(--mut);margin-bottom:4px}
+input,select{width:100%;padding:11px 12px;margin-bottom:12px;border-radius:12px;border:1px solid var(--line);background:var(--inp);color:var(--ink);font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+button{padding:11px 20px;border:0;border-radius:999px;background:var(--g);color:#0a0a0a;font:inherit;font-weight:600;cursor:pointer}
 button:hover{filter:brightness(.92)}
-button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
-button.del{padding:6px 10px;background:transparent;color:var(--r);border:1px solid var(--line)}
+button.sec{background:transparent;color:var(--ink);border:1px solid #3a3a3a}
+button.white{background:#fff;color:#0a0a0a}
+button.cta{font-size:1.05rem;padding:15px 30px}
+button.del{padding:6px 11px;background:transparent;color:var(--r);border:1px solid var(--line)}
 .wx{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-bottom:10px}
-th,td{padding:6px 4px;text-align:left;border-bottom:1px solid var(--line);font-size:.9em}
+th,td{padding:6px 4px;text-align:left;border-bottom:1px solid var(--line);font-size:.9em}th{color:var(--mut);font-weight:500}
 td input{margin:0;min-width:72px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
-.alert{padding:10px 12px;background:var(--w);color:#000;border-radius:6px;margin:0 0 10px;font-size:.92em}
-.alert.danger{background:var(--r);color:#fff}.alert.ok{background:var(--g);color:#fff}
-.big{font-size:2.4em;font-weight:700;margin:2px 0}.pos{color:var(--g)}.neg{color:var(--r)}
-.bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--line);margin:8px 0}.bar i{display:block;height:100%}
+.alert{padding:10px 14px;background:#3a2f0a;color:#ffe08a;border:1px solid var(--w);border-radius:14px;margin:0 0 10px;font-size:.92em}
+.alert.danger{background:#44120e;color:#ffd0ca;border-color:var(--r)}.alert.ok{background:#1d2a05;color:#e6ffa0;border-color:var(--g)}
+.big{font-size:2.6em;font-weight:700;letter-spacing:-.03em;margin:2px 0}.pos{color:var(--g)}.neg{color:var(--r)}
+.bar{display:flex;height:16px;border-radius:999px;overflow:hidden;background:var(--line);margin:8px 0}.bar i{display:block;height:100%}
 .leg div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:.92em}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
 .tl{list-style:none;margin:0 0 10px;padding:0}
-.tl li{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;margin-bottom:6px;background:var(--bg);border-radius:8px;font-size:.9em}
-.tl li.bad{outline:1px solid var(--r)}
-.prog{height:14px;background:var(--line);border-radius:8px;overflow:hidden;margin:8px 0}
-.prog i{display:block;height:100%;background:var(--b);transition:width .3s}
-.dicas{background:var(--bg);padding:16px;border-radius:8px;min-height:84px}
+.tl li{display:flex;justify-content:space-between;gap:8px;padding:8px 12px;margin-bottom:6px;background:var(--inp);border:1px solid var(--line);border-radius:12px;font-size:.9em}
+.tl li.bad{border-color:var(--r)}
+.prog{height:14px;background:var(--line);border-radius:999px;overflow:hidden;margin:8px 0}
+.prog i{display:block;height:100%;background:var(--g);transition:width .3s}
+.dicas{background:var(--inp);border:1px solid var(--line);padding:18px;border-radius:16px;min-height:84px}
 .nav{display:flex;justify-content:space-between;margin-top:10px}
 .hint{font-size:.85em;color:var(--mut);margin:0 0 10px}
 .msg{margin-left:10px;color:var(--g);font-size:.9em}
-@media(max-width:520px){.two{grid-template-columns:1fr}}
+@media(max-width:520px){.two{grid-template-columns:1fr}.hero{margin-top:48px}.top{padding-left:16px}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 </head>
 <body>
-<header>
-  <h1>Minhas Finanças</h1>
-  <p class="sub">Organize suas finanças de forma simples e eficiente.</p>
+<header class="top">
+  <div class="brand"><i></i>Minhas Finanças</div>
+  <nav>
+    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="sec" data-go>Entrar</button><button class="white" data-go>Criar conta</button></div>
+    <div id="logado" class="navg" hidden><span id="email-atual"></span><button class="sec" id="sair">Sair</button></div>
+  </nav>
 </header>
+
+<div id="land">
+  <section class="hero">
+    <h1>Seu dinheiro organizado enquanto você cuida da sua vida</h1>
+    <p>Anote renda, gastos e dívidas, veja quanto sobra no mês e crie o hábito de guardar dinheiro. Tudo em um só lugar.</p>
+    <button class="cta" data-go>Começar agora</button>
+  </section>
+  <section class="vant" id="vantagens">
+    <div><b>Organização do mês</b><span>Veja o saldo após cada recebimento e vencimento, recebendo por mês ou por quinzena.</span></div>
+    <div><b>Guardar todo mês</b><span>Defina uma meta e acompanhe a projeção dos próximos 12 meses.</span></div>
+    <div><b>Dicas práticas</b><span>Aprenda a controlar gastos e sair das dívidas, uma dica por vez.</span></div>
+  </section>
+  <section id="conta">
+    <h2>Crie sua conta ou entre</h2>
+    <label for="em">E-mail</label><input id="em" type="email" autocomplete="email">
+    <label for="se">Senha (mínimo 8 caracteres)</label><input id="se" type="password" autocomplete="current-password">
+    <button id="entrar">Entrar</button> <button class="sec" id="criar">Criar conta</button><span class="msg" id="msg"></span>
+    <p class="hint" style="margin-top:12px">Seus dados ficam guardados na sua conta.</p>
+  </section>
+</div>
+
+<main id="app" hidden>
+<div class="apptitle"><h1>Seu painel financeiro</h1><p class="sub">Preencha os dados e veja o resultado na hora.</p></div>
 
 <div class="container">
 <div class="box">
-  <div id="conta">
-    <h2>Sua conta</h2>
-    <div id="logado" hidden>Conectado como <b id="email-atual"></b> <button class="sec" id="sair">Sair</button></div>
-    <div id="deslogado">
-      <div class="two">
-        <div><label for="em">E-mail</label><input id="em" type="email" autocomplete="email"></div>
-        <div><label for="se">Senha (mínimo 8 caracteres)</label><input id="se" type="password" autocomplete="current-password"></div>
-      </div>
-      <button id="entrar">Entrar</button> <button class="sec" id="criar">Criar conta</button><span class="msg" id="msg"></span>
-    </div>
-    <p class="hint" style="margin-top:10px">Sem login, os dados ficam só neste navegador. Com login, ficam guardados na sua conta.</p>
-  </div>
-
   <h2>Renda</h2>
   <label for="tipo">Como você recebe?</label>
   <select id="tipo" data-f="tipo"><option value="mensal">Todo mês (uma vez)</option><option value="q">Quinzenal (duas vezes por mês)</option></select>
@@ -117,7 +145,7 @@ td input{margin:0;min-width:72px}
 
   <div class="alert" style="margin-top:20px"><strong>Aviso:</strong> ferramenta educativa. Não substitui um profissional certificado.</div>
 </div>
-</div>
+</div></main>
 
 <script>
 (function(){
@@ -257,6 +285,8 @@ document.addEventListener("click",function(e){
     var l2=t.dataset.del;S[l2].splice(+t.dataset.i,1);
     if(!S[l2].length)S[l2].push(JSON.parse(JSON.stringify(NEW[l2])));
     drawList(l2);save();render();
+  }else if(t.dataset.go!==undefined){
+    $("#conta").scrollIntoView({behavior:"smooth",block:"center"});setTimeout(function(){$("#em").focus()},450);
   }else if(t.id==="sug"){
     S.poupa=String(Math.round(calc().renda*0.1));$("#poupa").value=S.poupa;save();render();
   }else if(t.id==="tprev"||t.id==="tnext"){
@@ -291,13 +321,14 @@ if(sb){
     sb.auth.signUp({email:$("#em").value,password:$("#se").value})
       .then(function(x){setMsg(x.error?x.error.message:"Conta criada. Confira seu e-mail para confirmar.")});
   };
-  $("#sair").onclick=function(){sb.auth.signOut()};
+  $("#sair").onclick=function(){sb.auth.signOut().then(function(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()})};
   sb.auth.onAuthStateChange(function(ev,session){
     user=session?session.user:null;
     $("#logado").hidden=!user;$("#deslogado").hidden=!!user;
+    $("#land").hidden=!!user;$("#app").hidden=!user;
     if(user){$("#email-atual").textContent=user.email;cloudLoad()}
   });
-}else{$("#conta").hidden=true}
+}else{$("#land").hidden=true;$("#deslogado").hidden=true;$("#app").hidden=false}
 
 drawAll();render();showTip();
 })();
