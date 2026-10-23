@@ -140,8 +140,8 @@ td:first-child input{font-weight:500}
 .hint{font-size:.85rem;color:var(--mut);margin:0 0 12px;line-height:1.5}
 
 /* modal */
-.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px}
-.modal[hidden]{display:none}
+.modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px}
+.modal:target{display:grid}
 .modal-backdrop{position:absolute;inset:0;background:rgba(5,8,22,.7);backdrop-filter:blur(6px);animation:fadeIn .25s ease}
 .modal-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r3);padding:32px 28px;max-width:420px;width:100%;backdrop-filter:blur(20px);box-shadow:0 30px 80px rgba(0,0,0,.5);animation:popIn .3s cubic-bezier(.2,.9,.3,1.2)}
 .modal-close{position:absolute;top:12px;right:14px;background:transparent;border:0;color:var(--mut);font-size:1.6rem;cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px}
@@ -164,7 +164,7 @@ td:first-child input{font-weight:500}
 <header class="top">
   <div class="brand"><span class="dot"></span>Minhas Finanças</div>
   <nav>
-    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><button class="btn white sm" id="openSignup" onclick="document.getElementById('signupModal').hidden=false;setTimeout(function(){document.getElementById('sem').focus()},100)">Criar conta</button></div>
+    <div class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><a href="#signupModal" class="btn white sm">Criar conta</a></div>
     <div id="logado" class="navg" hidden><span id="email-atual"></span><button class="btn ghost sm" id="sair">Sair</button></div>
   </nav>
 </header>
@@ -268,10 +268,11 @@ td:first-child input{font-weight:500}
 <div class="toast" id="toast"></div>
 
 <!-- modal criar conta -->
-<div class="modal" id="signupModal" hidden>
-  <div class="modal-backdrop" onclick="document.getElementById('signupModal').hidden=true"></div>
+<div class="modal" id="signupModal">
+  <div class="modal-backdrop"></div>
+  <a href="#" class="modal-backdrop" style="position:absolute;inset:0"></a>
   <div class="modal-card">
-    <button class="modal-close" id="closeSignup" onclick="document.getElementById('signupModal').hidden=true">×</button>
+    <a href="#" class="modal-close">×</a>
     <h2>Crie sua conta</h2>
     <p class="sub">Comece em segundos. Sem cartão.</p>
     <div class="field"><label for="sem">E-mail</label><div class="input-wrap"><span class="ic">✉</span><input id="sem" type="email" autocomplete="email" placeholder="voce@email.com"></div></div>
