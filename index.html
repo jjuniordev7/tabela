@@ -508,10 +508,15 @@ if(sb){
     sb.auth.signUp({email:$("#sem").value,password:$("#ses").value})
       .then(function(x){
         if(x.error){$("#msgModal").textContent=x.error.message;return}
-        $("#msgModal").textContent="Conta criada. Confira seu e-mail.";
+        $("#msgModal").textContent="Conta criada. Confira seu e-mail se solicitado.";
         var wa=$("#swa").value.trim();
         if(wa){ setTimeout(function(){sendWhatsApp(wa)},600); }
-        setTimeout(function(){$("#signupModal").hidden=true},1200);
+        setTimeout(function(){
+          $("#signupModal").hidden=true;
+          // revela o app mesmo sem sessão (modo convidado)
+          $("#land").hidden=true;
+          $("#app").hidden=false;
+        },1200);
       });
   };
   $("#sair").onclick=function(){sb.auth.signOut().then(function(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()})};
