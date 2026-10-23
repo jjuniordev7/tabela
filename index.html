@@ -157,13 +157,14 @@ td:first-child input{font-weight:500}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 <div class="wrap">
 <header class="top">
   <div class="brand"><span class="dot"></span>Minhas Finanças</div>
   <nav>
-    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><button class="btn white sm" id="openSignup">Criar conta</button></div>
+    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><button class="btn white sm" id="openSignup" onclick="document.getElementById('signupModal').hidden=false;setTimeout(function(){document.getElementById('sem').focus()},100)">Criar conta</button></div>
     <div id="logado" class="navg" hidden><span id="email-atual"></span><button class="btn ghost sm" id="sair">Sair</button></div>
   </nav>
 </header>
@@ -200,6 +201,9 @@ td:first-child input{font-weight:500}
 
 <main id="app" hidden>
 <div class="apptitle"><h1>Seu painel financeiro</h1><p class="sub">Preencha os dados e veja o resultado na hora.</p></div>
+<div id="motiv" style="max-width:1280px;margin:0 auto 20px;padding:0 24px">
+  <div style="background:linear-gradient(135deg,rgba(124,255,203,.08),rgba(110,168,255,.08));border:1px solid rgba(124,255,203,.2);border-radius:16px;padding:14px 20px;font-size:.95rem;color:#c8ffe8" id="motivTxt"></div>
+</div>
 
 <div class="container">
 <div class="box">
@@ -236,6 +240,7 @@ td:first-child input{font-weight:500}
 <div class="box" aria-live="polite">
   <h2>Resultado</h2>
   <div id="resultado-total"></div>
+  <canvas id="chartGastos" height="220" style="margin:12px 0"></canvas>
   <button class="btn ghost sm" id="sendwa" style="margin-top:10px">📲 Enviar resumo no WhatsApp</button>
 
   <h2>Organização do mês</h2>
@@ -264,9 +269,9 @@ td:first-child input{font-weight:500}
 
 <!-- modal criar conta -->
 <div class="modal" id="signupModal" hidden>
-  <div class="modal-backdrop"></div>
+  <div class="modal-backdrop" onclick="document.getElementById('signupModal').hidden=true"></div>
   <div class="modal-card">
-    <button class="modal-close" id="closeSignup">×</button>
+    <button class="modal-close" id="closeSignup" onclick="document.getElementById('signupModal').hidden=true">×</button>
     <h2>Crie sua conta</h2>
     <p class="sub">Comece em segundos. Sem cartão.</p>
     <div class="field"><label for="sem">E-mail</label><div class="input-wrap"><span class="ic">✉</span><input id="sem" type="email" autocomplete="email" placeholder="voce@email.com"></div></div>
@@ -397,13 +402,38 @@ function sendWhatsApp(num){
   var url="https://wa.me/"+n+"?text="+encodeURIComponent(buildWaSummary());
   window.open(url,"_blank");
 }
+var chartGastos=null;
+function updateChart(c){
+  var ctx=document.getElementById("chartGastos"); if(!ctx||!window.Chart) return;
+  if(chartGastos){chartGastos.destroy();}
+  if(c.renda<=0){ctx.style.display="none";return}
+  ctx.style.display="block";
+  chartGastos=new Chart(ctx,{type:"doughnut",data:{labels:["Gastos fixos","Gastos variáveis","Parcelas de dívidas","Guardado","Sobra"],
+    datasets:[{data:[c.fix,c.vr,c.dv,c.poupa,Math.max(c.sobra,0)],
+      backgroundColor:["#6ea8ff","#ffc933","#ff5d6c","#b79cff","#7cffcb"],borderWidth:0}]},
+    options:{plugins:{legend:{position:"bottom",labels:{color:"#8b93b3",font:{size:11}}}},cutout:"62%"});
+}
+function render(){
   var c=calc();
   $("#resultado-total").innerHTML=resultHTML(c);
   $("#organizacao-mes").innerHTML=monthHTML(c);
   $("#guardar-mes").innerHTML=saveHTML(c);
-}
+  updateChart(c);
 
-var TIPS=[
+var MOTIV=[
+"Busque sempre uma renda extra: freelas, vendas online ou habilidades que você já tem.",
+"Guardar dinheiro todo mês, mesmo pouco, constrói liberdade no futuro.",
+"Renda extra + economia = aceleração rumo à independência financeira.",
+"Quem guarda 10% da renda já está à frente da maioria. Comece hoje.",
+"Cada real guardado é um soldado trabalhando por você.",
+"Não dependa de uma única fonte de renda. Diversifique.",
+"Pequenas economias diárias viram grandes conquistas em 12 meses.",
+"Renda extra não é luxo, é segurança. Invista em você.",
+"Guardar antes de gastar: pague-se primeiro, sempre.",
+"Quem tem reserva dorme tranquilo. Construa a sua."];
+var mi=0;
+function showMotiv(){var e=$("#motivTxt");if(e)e.textContent=MOTIV[mi];mi=(mi+1)%MOTIV.length}
+setInterval(showMotiv,6000);
 "Regra 50/30/20: até 50% da renda para o essencial, 30% para desejos e 20% para guardar ou quitar dívidas.",
 "Pague-se primeiro: separe o valor que vai guardar assim que o dinheiro cair, antes de gastar.",
 "Monte uma reserva de emergência que cubra de 3 a 6 meses dos seus gastos mensais.",
@@ -492,7 +522,7 @@ if(sb){
   });
 }else{$("#land").hidden=true;$("#deslogado").hidden=true;$("#app").hidden=false}
 
-drawAll();render();showTip();
+drawAll();render();showTip();showMotiv();
 })();
 </script>
 </body>
