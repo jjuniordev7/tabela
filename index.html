@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minhas Finanças</title>
+<style>
+:root{--bg:#f4f4f4;--panel:#fff;--ink:#333;--mut:#666;--line:#ddd;--inp:#fff;--g:#28a745;--b:#0d6efd;--w:#ffc107;--r:#dc3545;--sav:#6a5acd}
+@media (prefers-color-scheme:dark){:root{--bg:#1e1e2f;--panel:#2a2a40;--ink:#f1f1f1;--mut:#aaa;--line:#44445c;--inp:#1e1e2f}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink);padding:20px}
+header{text-align:center;margin-bottom:28px}h1{margin:0 0 6px;font-size:2em}.sub{color:var(--mut);margin:0}
+.container{display:flex;flex-wrap:wrap;gap:24px;max-width:1400px;margin:auto}
+.box{flex:1 1 360px;background:var(--panel);padding:22px;border-radius:16px;box-shadow:0 4px 10px #0000000d;min-width:0}
+h2{font-size:1.2em;margin:24px 0 10px}.box>h2:first-child,#conta h2{margin-top:0}
+label{display:block;font-size:.9em;color:var(--mut);margin-bottom:4px}
+input,select{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid var(--line);background:var(--inp);color:var(--ink);font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+button{padding:10px 14px;border:0;border-radius:8px;background:var(--g);color:#fff;font:inherit;cursor:pointer}
+button:hover{filter:brightness(.92)}
+button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.del{padding:6px 10px;background:transparent;color:var(--r);border:1px solid var(--line)}
+.wx{overflow-x:auto}table{width:100%;border-collapse:collapse;margin-bottom:10px}
+th,td{padding:6px 4px;text-align:left;border-bottom:1px solid var(--line);font-size:.9em}
+td input{margin:0;min-width:72px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.alert{padding:10px 12px;background:var(--w);color:#000;border-radius:6px;margin:0 0 10px;font-size:.92em}
+.alert.danger{background:var(--r);color:#fff}.alert.ok{background:var(--g);color:#fff}
+.big{font-size:2.4em;font-weight:700;margin:2px 0}.pos{color:var(--g)}.neg{color:var(--r)}
+.bar{display:flex;height:16px;border-radius:8px;overflow:hidden;background:var(--line);margin:8px 0}.bar i{display:block;height:100%}
+.leg div{display:flex;justify-content:space-between;gap:8px;padding:3px 0;font-size:.92em}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.tl{list-style:none;margin:0 0 10px;padding:0}
+.tl li{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;margin-bottom:6px;background:var(--bg);border-radius:8px;font-size:.9em}
+.tl li.bad{outline:1px solid var(--r)}
+.prog{height:14px;background:var(--line);border-radius:8px;overflow:hidden;margin:8px 0}
+.prog i{display:block;height:100%;background:var(--b);transition:width .3s}
+.dicas{background:var(--bg);padding:16px;border-radius:8px;min-height:84px}
+.nav{display:flex;justify-content:space-between;margin-top:10px}
+.hint{font-size:.85em;color:var(--mut);margin:0 0 10px}
+.msg{margin-left:10px;color:var(--g);font-size:.9em}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body>
+<header>
+  <h1>Minhas Finanças</h1>
+  <p class="sub">Organize suas finanças de forma simples e eficiente.</p>
+</header>
+
+<div class="container">
+<div class="box">
+  <div id="conta">
+    <h2>Sua conta</h2>
+    <div id="logado" hidden>Conectado como <b id="email-atual"></b> <button class="sec" id="sair">Sair</button></div>
+    <div id="deslogado">
+      <div class="two">
+        <div><label for="em">E-mail</label><input id="em" type="email" autocomplete="email"></div>
+        <div><label for="se">Senha (mínimo 8 caracteres)</label><input id="se" type="password" autocomplete="current-password"></div>
+      </div>
+      <button id="entrar">Entrar</button> <button class="sec" id="criar">Criar conta</button><span class="msg" id="msg"></span>
+    </div>
+    <p class="hint" style="margin-top:10px">Sem login, os dados ficam só neste navegador. Com login, ficam guardados na sua conta.</p>
+  </div>
+
+  <h2>Renda</h2>
+  <label for="tipo">Como você recebe?</label>
+  <select id="tipo" data-f="tipo"><option value="mensal">Todo mês (uma vez)</option><option value="q">Quinzenal (duas vezes por mês)</option></select>
+  <div id="f-m"><label for="renda">Renda líquida do mês (R$)</label><input id="renda" data-f="renda" inputmode="decimal" placeholder="ex.: 5.000,00"></div>
+  <div id="f-q" class="two" hidden>
+    <div><label for="v1">Valor do 1º pagamento (R$)</label><input id="v1" data-f="v1" inputmode="decimal"></div>
+    <div><label for="v2">Valor do 2º pagamento (R$)</label><input id="v2" data-f="v2" inputmode="decimal"></div>
+  </div>
+  <div class="two">
+    <div><label for="dia1">Dia do recebimento</label><input id="dia1" data-f="dia1" inputmode="numeric" placeholder="5"></div>
+    <div id="w-d2"><label for="dia2">Dia do 2º pagamento</label><input id="dia2" data-f="dia2" inputmode="numeric" placeholder="20"></div>
+  </div>
+  <div class="two">
+    <div><label for="outras">Outras rendas (R$)</label><input id="outras" data-f="outras" inputmode="decimal"></div>
+    <div><label for="reserva">Reserva de emergência atual (R$)</label><input id="reserva" data-f="reserva" inputmode="decimal"></div>
+  </div>
+
+  <h2>Gastos fixos</h2>
+  <div class="wx"><table><thead><tr><th>Nome</th><th>Valor (R$)</th><th>Dia venc.</th><th></th></tr></thead><tbody id="b-fixos"></tbody></table></div>
+  <button data-add="fixos">Adicionar gasto fixo</button>
+
+  <h2>Gastos variáveis</h2>
+  <div class="wx"><table><thead><tr><th>Nome</th><th>Valor (R$)</th><th></th></tr></thead><tbody id="b-vars"></tbody></table></div>
+  <button data-add="vars">Adicionar gasto variável</button>
+
+  <h2>Dívidas</h2>
+  <div class="wx"><table><thead><tr><th>Nome</th><th>Parcela (R$)</th><th>Saldo (R$)</th><th>Juros %/mês</th><th></th></tr></thead><tbody id="b-dividas"></tbody></table></div>
+  <button data-add="dividas">Adicionar dívida</button>
+</div>
+
+<div class="box" aria-live="polite">
+  <h2>Resultado</h2>
+  <div id="resultado-total"></div>
+
+  <h2>Organização do mês</h2>
+  <div id="organizacao-mes"></div>
+
+  <h2>Guardar dinheiro todo mês</h2>
+  <label for="poupa">Quanto quer guardar por mês (R$)</label>
+  <input id="poupa" data-f="poupa" inputmode="decimal" placeholder="0,00">
+  <p><button class="sec" id="sug">Sugerir 10% da renda</button></p>
+  <div class="two">
+    <div><label for="metaN">Meta (viagem, reserva...)</label><input id="metaN" data-f="metaN"></div>
+    <div><label for="metaV">Valor da meta (R$)</label><input id="metaV" data-f="metaV" inputmode="decimal"></div>
+  </div>
+  <div id="guardar-mes"></div>
+
+  <h2>Dicas de finanças</h2>
+  <div class="dicas" id="dicas"></div>
+  <div class="nav"><button class="sec" id="tprev">Anterior</button><button class="sec" id="tnext">Próxima</button></div>
+
+  <div class="alert" style="margin-top:20px"><strong>Aviso:</strong> ferramenta educativa. Não substitui um profissional certificado.</div>
+</div>
+</div>
+
+<script>
+(function(){
+var KEY="minhasFinancas-v2";
+var S={tipo:"mensal",renda:"",dia1:"5",v1:"",v2:"",dia2:"20",outras:"",reserva:"",poupa:"",metaN:"",metaV:"",
+  fixos:[{n:"",v:"",d:""}],vars:[{n:"",v:""}],dividas:[{n:"",p:"",s:"",j:""}]};
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv)for(var k in S)if(sv[k]!==undefined)S[k]=sv[k]}catch(e){}
+
+var $=function(s){return document.querySelector(s)};
+var fm=new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}),R=function(n){return fm.format(n)};
+function num(x){x=String(x==null?"":x).trim();if(!x)return 0;if(x.indexOf(",")>-1)x=x.replace(/\./g,"").replace(",",".");var n=parseFloat(x);return isNaN(n)?0:n}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function pct(a,b){return b>0?Math.round(a/b*100):0}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}cloudSave()}
+
+var NEW={fixos:{n:"",v:"",d:""},vars:{n:"",v:""},dividas:{n:"",p:"",s:"",j:""}};
+var L={fixos:[["n","Nome"],["v","Valor"],["d","Dia de vencimento"]],vars:[["n","Nome"],["v","Valor"]],dividas:[["n","Dívida"],["p","Parcela"],["s","Saldo"],["j","Juros ao mês"]]};
+function drawList(l){
+  $("#b-"+l).innerHTML=S[l].map(function(r,i){
+    return "<tr>"+L[l].map(function(c){
+      return '<td><input data-l="'+l+'" data-i="'+i+'" data-k="'+c[0]+'" aria-label="'+c[1]+'" value="'+esc(r[c[0]]||"")+'"'+(c[0]==="n"?"":' inputmode="decimal"')+'></td>';
+    }).join("")+'<td><button class="del" data-del="'+l+'" data-i="'+i+'" aria-label="Remover linha">×</button></td></tr>';
+  }).join("");
+}
+function drawAll(){
+  ["tipo","renda","dia1","v1","v2","dia2","outras","reserva","poupa","metaN","metaV"].forEach(function(k){$("#"+k).value=S[k]});
+  drawList("fixos");drawList("vars");drawList("dividas");
+}
+
+function calc(){
+  var q=S.tipo==="q",pay=q?[num(S.v1),num(S.v2)]:[num(S.renda)];
+  var renda=pay.reduce(function(a,b){return a+b},0)+num(S.outras),fix=0,vr=0,dv=0;
+  S.fixos.forEach(function(r){fix+=num(r.v)});
+  S.vars.forEach(function(r){vr+=num(r.v)});
+  S.dividas.forEach(function(r){dv+=num(r.p)});
+  var total=fix+vr+dv,poupa=num(S.poupa);
+  return{q:q,pay:pay,renda:renda,fix:fix,vr:vr,dv:dv,poupa:poupa,total:total,livre:renda-total,sobra:renda-total-poupa,reserva:num(S.reserva)};
+}
+
+function resultHTML(c){
+  if(c.renda<=0)return '<p class="hint">Informe sua renda para ver quanto sobra, para onde o dinheiro vai e o plano para 30 dias.</p>';
+  var neg=c.sobra<0,base=Math.max(c.renda,c.total+c.poupa);
+  var seg=[["var(--b)",c.fix],["var(--w)",c.vr],["var(--r)",c.dv],["var(--sav)",c.poupa],["var(--g)",Math.max(c.sobra,0)]];
+  var row=function(col,nome,v){return '<div><span><span class="dot" style="background:'+col+'"></span>'+nome+'</span><b>'+R(v)+' ('+pct(v,c.renda)+'%)</b></div>'};
+  var h='<p class="hint" style="margin:0">'+(neg?"Falta no mês":"Sobra no mês")+'</p><div class="big '+(neg?"neg":"pos")+'">'+R(Math.abs(c.sobra))+'</div>'+
+    '<div class="bar" role="img" aria-label="Distribuição da renda">'+seg.map(function(s){return '<i style="width:'+(s[1]/base*100)+'%;background:'+s[0]+'"></i>'}).join("")+'</div>'+
+    '<div class="leg">'+row("var(--b)","Gastos fixos",c.fix)+row("var(--w)","Gastos variáveis",c.vr)+row("var(--r)","Parcelas de dívidas",c.dv)+row("var(--sav)","Guardado",c.poupa)+row("var(--g)","Sobra",Math.max(c.sobra,0))+'</div>';
+  var al=[],meses=c.total>0?c.reserva/c.total:0,m1=meses.toFixed(1).replace(".",",");
+  if(c.livre<0)al.push(["danger","Você gasta "+R(-c.livre)+" a mais do que ganha. Esse é o primeiro ponto a resolver."]);
+  else if(c.sobra<0)al.push(["danger","O valor que você quer guardar é maior do que a sobra do mês ("+R(c.livre)+"). Reduza até esse valor."]);
+  if(pct(c.dv,c.renda)>30)al.push(["","As parcelas de dívidas passam de 30% da renda."]);
+  if(pct(c.fix,c.renda)>50)al.push(["","Os gastos fixos passam de 50% da renda, o que deixa pouca margem."]);
+  if(c.total>0)al.push([meses<3?"":"ok",meses<3?"Sua reserva cobre "+m1+" mês(es). A meta é 3 e, depois, 6 meses ("+R(c.total*6)+").":"Sua reserva cobre "+m1+" meses de gastos. Bom ponto de partida."]);
+  if(!neg&&pct(c.poupa,c.renda)>=20)al.push(["ok","Você guarda 20% ou mais da renda, acima da referência 50/30/20."]);
+  h+='<div style="margin-top:12px">'+al.map(function(a){return '<div class="alert '+a[0]+'">'+a[1]+'</div>'}).join("")+'</div>';
+
+  var plan=["Anote todos os gastos por 30 dias, mesmo os pequenos."];
+  if(c.livre<0){
+    var top=S.vars.slice().sort(function(a,b){return num(b.v)-num(a.v)})[0];
+    plan.push("Corte pelo menos "+R(-c.livre)+" por mês. Comece pelos variáveis"+(top&&top.n&&num(top.v)>0?", como "+esc(top.n)+" ("+R(num(top.v))+")":"")+".");
+  }
+  var ds=S.dividas.filter(function(d){return num(d.p)>0||num(d.s)>0}).sort(function(a,b){return num(b.j)-num(a.j)});
+  if(ds.length){
+    plan.push("Ordem para atacar as dívidas (maior juros primeiro): "+ds.map(function(d){return esc(d.n||"sem nome")+(num(d.j)?" ("+String(num(d.j)).replace(".",",")+"% a.m.)":"")}).join(", ")+".");
+    plan.push("Pague o mínimo de todas e coloque qualquer valor extra na primeira da lista.");
+  }
+  if(c.poupa>0)plan.push("Guarde "+R(c.poupa)+" assim que o dinheiro cair"+(c.q?" ("+R(c.poupa/2)+" em cada pagamento)":"")+". Assim a sobra não vira gasto.");
+  else if(c.livre>0)plan.push("Defina um valor para guardar todo mês. Comece com "+R(c.renda*0.1)+" (10% da renda).");
+  plan.push("Em 30 dias, volte aqui com os valores reais e compare.");
+  return h+'<h3 style="margin:16px 0 6px">Plano para 30 dias</h3><ol style="margin:0;padding-left:20px;line-height:1.6">'+plan.map(function(p){return "<li>"+p+"</li>"}).join("")+'</ol>';
+}
+
+function monthHTML(c){
+  if(c.renda<=0)return '<p class="hint">Preencha a renda e os gastos fixos com o dia de vencimento.</p>';
+  var d1=parseInt(S.dia1)||5,d2=parseInt(S.dia2)||20;
+  var ev=[{d:d1,v:c.pay[0]+num(S.outras),t:c.q?"Recebe o 1º pagamento":"Recebe o salário"}];
+  if(c.q)ev.push({d:d2,v:c.pay[1],t:"Recebe o 2º pagamento"});
+  S.fixos.forEach(function(r){var d=parseInt(r.d),v=num(r.v);if(d>0&&d<=31&&v>0)ev.push({d:d,v:-v,t:r.n||"Gasto fixo"})});
+  ev.sort(function(a,b){return a.d-b.d||b.v-a.v});
+  var s=0,bad=false,li=ev.map(function(e){
+    s+=e.v;var ng=s<0;if(ng)bad=true;
+    return '<li class="'+(ng?"bad":"")+'"><span>Dia '+e.d+': '+esc(e.t)+'</span><b>'+R(e.v)+' → '+R(s)+'</b></li>';
+  }).join("");
+  return '<p class="hint">Saldo após cada recebimento e vencimento. Entram só os gastos fixos com dia informado.</p><ul class="tl">'+li+'</ul>'+
+    (bad?'<div class="alert danger">Alguma conta vence antes de o dinheiro entrar. Tente mudar o vencimento ou reserve parte do pagamento anterior.</div>':"");
+}
+
+function saveHTML(c){
+  var p=c.poupa,m=num(S.metaV);
+  if(p<=0)return '<p class="hint">Informe quanto quer guardar por mês para ver a projeção.</p>';
+  var rows="",acc=0;
+  for(var i=1;i<=12;i++){acc+=p;rows+="<tr><td>Mês "+i+"</td><td>"+R(p)+"</td><td>"+R(acc)+"</td></tr>"}
+  var h=S.metaN?'<p style="margin:0 0 6px"><b>Meta: '+esc(S.metaN)+'</b></p>':"";
+  if(m>0){
+    var f=Math.min(100,Math.round(p*12/m*100));
+    h+='<p class="hint">Meta de '+R(m)+' em cerca de '+Math.ceil(m/p)+' mês(es). Em 12 meses: '+f+'% da meta.</p><div class="prog"><i style="width:'+f+'%"></i></div>';
+  }
+  return h+'<div class="wx"><table><thead><tr><th>Mês</th><th>Guardado</th><th>Acumulado</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+
+function render(){
+  $("#f-m").hidden=S.tipo==="q";$("#f-q").hidden=S.tipo!=="q";$("#w-d2").hidden=S.tipo!=="q";
+  var c=calc();
+  $("#resultado-total").innerHTML=resultHTML(c);
+  $("#organizacao-mes").innerHTML=monthHTML(c);
+  $("#guardar-mes").innerHTML=saveHTML(c);
+}
+
+var TIPS=[
+"Regra 50/30/20: até 50% da renda para o essencial, 30% para desejos e 20% para guardar ou quitar dívidas.",
+"Pague-se primeiro: separe o valor que vai guardar assim que o dinheiro cair, antes de gastar.",
+"Monte uma reserva de emergência que cubra de 3 a 6 meses dos seus gastos mensais.",
+"Evite o rotativo do cartão: os juros são muito altos. Sempre que puder, pague a fatura inteira.",
+"Revise suas assinaturas todo mês e cancele as que você quase não usa.",
+"Antes de uma compra que não é urgente, espere 48 horas. Muita vontade passa sozinha.",
+"Vá ao mercado com lista e compare preços. Ir sem fome ajuda a gastar menos.",
+"Negocie dívidas: peça desconto para pagar à vista ou parcelas menores antes de aceitar o valor cheio.",
+"Quite primeiro a dívida de maior juros e pague só o mínimo nas outras.",
+"Automatize: agende a transferência para a poupança no dia em que você recebe.",
+"Anote todos os gastos por 30 dias, até os pequenos. O que se mede se controla.",
+"Revise seu orçamento todo mês: renda, gastos e metas mudam."];
+var ti=Math.floor(Math.random()*TIPS.length);
+function showTip(){$("#dicas").textContent=TIPS[ti]}
+
+document.addEventListener("input",function(e){
+  var t=e.target;
+  if(t.dataset.f)S[t.dataset.f]=t.value;
+  else if(t.dataset.l)S[t.dataset.l][t.dataset.i][t.dataset.k]=t.value;
+  else return;
+  save();render();
+});
+document.addEventListener("change",function(e){if(e.target.dataset.f){S[e.target.dataset.f]=e.target.value;save();render()}});
+document.addEventListener("click",function(e){
+  var t=e.target;
+  if(t.dataset.add){var l=t.dataset.add;S[l].push(JSON.parse(JSON.stringify(NEW[l])));drawList(l);save()}
+  else if(t.dataset.del){
+    var l2=t.dataset.del;S[l2].splice(+t.dataset.i,1);
+    if(!S[l2].length)S[l2].push(JSON.parse(JSON.stringify(NEW[l2])));
+    drawList(l2);save();render();
+  }else if(t.id==="sug"){
+    S.poupa=String(Math.round(calc().renda*0.1));$("#poupa").value=S.poupa;save();render();
+  }else if(t.id==="tprev"||t.id==="tnext"){
+    ti=(ti+(t.id==="tnext"?1:TIPS.length-1))%TIPS.length;showTip();
+  }
+});
+
+/* Supabase: troque os dois valores abaixo */
+var SB_URL="COLE_AQUI_A_PROJECT_URL",SB_KEY="COLE_AQUI_A_CHAVE_PUBLICA";
+var sb=null,user=null,timer=null;
+try{if(window.supabase&&SB_URL.indexOf("COLE")<0)sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){}
+function cloudSave(){
+  if(!sb||!user)return;
+  clearTimeout(timer);
+  timer=setTimeout(function(){
+    sb.from("financas").upsert({user_id:user.id,dados:S,atualizado_em:new Date().toISOString()})
+      .then(function(x){if(x.error)console.error(x.error)});
+  },800);
+}
+function cloudLoad(){
+  return sb.from("financas").select("dados").eq("user_id",user.id).maybeSingle().then(function(x){
+    if(x.data&&x.data.dados){for(var k in S)if(x.data.dados[k]!==undefined)S[k]=x.data.dados[k];drawAll();render()}
+  });
+}
+if(sb){
+  var setMsg=function(t){$("#msg").textContent=t};
+  $("#entrar").onclick=function(){
+    sb.auth.signInWithPassword({email:$("#em").value,password:$("#se").value})
+      .then(function(x){setMsg(x.error?"E-mail ou senha incorretos.":"")});
+  };
+  $("#criar").onclick=function(){
+    sb.auth.signUp({email:$("#em").value,password:$("#se").value})
+      .then(function(x){setMsg(x.error?x.error.message:"Conta criada. Confira seu e-mail para confirmar.")});
+  };
+  $("#sair").onclick=function(){sb.auth.signOut()};
+  sb.auth.onAuthStateChange(function(ev,session){
+    user=session?session.user:null;
+    $("#logado").hidden=!user;$("#deslogado").hidden=!!user;
+    if(user){$("#email-atual").textContent=user.email;cloudLoad()}
+  });
+}else{$("#conta").hidden=true}
+
+drawAll();render();showTip();
+})();
+</script>
+</body>
+</html>
