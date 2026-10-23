@@ -241,7 +241,10 @@ td:first-child input{font-weight:500}
   <h2>Resultado</h2>
   <div id="resultado-total"></div>
   <canvas id="chartGastos" height="220" style="margin:12px 0"></canvas>
-  <button class="btn ghost sm" id="sendwa" style="margin-top:10px">📲 Enviar resumo no WhatsApp</button>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+    <button class="btn ghost sm" id="sendwa">📲 Enviar resumo no WhatsApp</button>
+    <a class="btn ghost sm" id="sendmail" href="#" onclick="this.href='mailto:?subject=Resumo%20Financeiro&body='+encodeURIComponent(buildWaSummary().replace(/\*/g,''))">✉️ Enviar resumo por e-mail</a>
+  </div>
 
   <h2>Organização do mês</h2>
   <div id="organizacao-mes"></div>
@@ -540,6 +543,7 @@ window.doSignup=function(){
         window.location.hash="";
         $("#land").hidden=true;
         $("#app").hidden=false;
+        $("#app").scrollIntoView({behavior:"smooth",block:"start"});
       },1200);
     });
 };
