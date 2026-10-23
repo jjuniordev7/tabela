@@ -139,8 +139,15 @@ td:first-child input{font-weight:500}
 .nav{display:flex;justify-content:space-between;margin-top:12px;gap:10px}
 .hint{font-size:.85rem;color:var(--mut);margin:0 0 12px;line-height:1.5}
 
-/* toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(10,15,36,.9);border:1px solid var(--line);color:var(--ink);padding:12px 20px;border-radius:999px;font-size:.85rem;opacity:0;transition:.3s;pointer-events:none;z-index:100;backdrop-filter:blur(10px)}
+/* modal */
+.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px}
+.modal[hidden]{display:none}
+.modal-backdrop{position:absolute;inset:0;background:rgba(5,8,22,.7);backdrop-filter:blur(6px);animation:fadeIn .25s ease}
+.modal-card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r3);padding:32px 28px;max-width:420px;width:100%;backdrop-filter:blur(20px);box-shadow:0 30px 80px rgba(0,0,0,.5);animation:popIn .3s cubic-bezier(.2,.9,.3,1.2)}
+.modal-close{position:absolute;top:12px;right:14px;background:transparent;border:0;color:var(--mut);font-size:1.6rem;cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px}
+.modal-close:hover{color:var(--ink);background:rgba(255,255,255,.05)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media(max-width:640px){
@@ -156,7 +163,7 @@ td:first-child input{font-weight:500}
 <header class="top">
   <div class="brand"><span class="dot"></span>Minhas Finanças</div>
   <nav>
-    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><button class="btn white sm" data-go>Criar conta</button></div>
+    <div id="deslogado" class="navg"><a href="#vantagens">Vantagens</a><button class="btn ghost sm" data-go>Entrar</button><button class="btn white sm" id="openSignup">Criar conta</button></div>
     <div id="logado" class="navg" hidden><span id="email-atual"></span><button class="btn ghost sm" id="sair">Sair</button></div>
   </nav>
 </header>
@@ -254,6 +261,21 @@ td:first-child input{font-weight:500}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- modal criar conta -->
+<div class="modal" id="signupModal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <button class="modal-close" id="closeSignup">×</button>
+    <h2>Crie sua conta</h2>
+    <p class="sub">Comece em segundos. Sem cartão.</p>
+    <div class="field"><label for="sem">E-mail</label><div class="input-wrap"><span class="ic">✉</span><input id="sem" type="email" autocomplete="email" placeholder="voce@email.com"></div></div>
+    <div class="field"><label for="ses">Senha (mínimo 8)</label><div class="input-wrap"><span class="ic">🔒</span><input id="ses" type="password" autocomplete="new-password" placeholder="••••••••"></div></div>
+    <div class="field"><label for="swa">WhatsApp (opcional)</label><div class="input-wrap"><span class="ic">📱</span><input id="swa" type="tel" autocomplete="tel" placeholder="11999999999"></div></div>
+    <button class="btn prim" id="criarModal" style="width:100%;margin-top:8px">Criar conta</button>
+    <span class="msg" id="msgModal"></span>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -407,6 +429,10 @@ document.addEventListener("input",function(e){
 document.addEventListener("change",function(e){if(e.target.dataset.f){S[e.target.dataset.f]=e.target.value;save();render()}});
 document.addEventListener("click",function(e){
   var t=e.target;
+  if(t.id==="openSignup"){ $("#signupModal").hidden=false; setTimeout(function(){$("#sem").focus()},100); }
+  else if(t.id==="closeSignup"||t.classList.contains("modal-backdrop")){ $("#signupModal").hidden=true; }
+});
+  var t=e.target;
   if(t.dataset.add){var l=t.dataset.add;S[l].push(JSON.parse(JSON.stringify(NEW[l])));drawList(l);save();toast("Linha adicionada")}
   else if(t.dataset.del){
     var l2=t.dataset.del;S[l2].splice(+t.dataset.i,1);
@@ -447,15 +473,14 @@ if(sb){
     sb.auth.signInWithPassword({email:$("#em").value,password:$("#se").value})
       .then(function(x){setMsg(x.error?"E-mail ou senha incorretos.":"")});
   };
-  $("#criar").onclick=function(){
-    sb.auth.signUp({email:$("#em").value,password:$("#se").value})
+  $("#criarModal").onclick=function(){
+    sb.auth.signUp({email:$("#sem").value,password:$("#ses").value})
       .then(function(x){
-        if(x.error){setMsg(x.error.message);return}
-        setMsg("Conta criada. Confira seu e-mail para confirmar.");
-        var wa=$("#wa").value.trim();
-        if(wa){
-          setTimeout(function(){sendWhatsApp(wa)},600);
-        }
+        if(x.error){$("#msgModal").textContent=x.error.message;return}
+        $("#msgModal").textContent="Conta criada. Confira seu e-mail.";
+        var wa=$("#swa").value.trim();
+        if(wa){ setTimeout(function(){sendWhatsApp(wa)},600); }
+        setTimeout(function(){$("#signupModal").hidden=true},1200);
       });
   };
   $("#sair").onclick=function(){sb.auth.signOut().then(function(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()})};
