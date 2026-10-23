@@ -278,7 +278,7 @@ td:first-child input{font-weight:500}
     <div class="field"><label for="sem">E-mail</label><div class="input-wrap"><span class="ic">✉</span><input id="sem" type="email" autocomplete="email" placeholder="voce@email.com"></div></div>
     <div class="field"><label for="ses">Senha (mínimo 8)</label><div class="input-wrap"><span class="ic">🔒</span><input id="ses" type="password" autocomplete="new-password" placeholder="••••••••"></div></div>
     <div class="field"><label for="swa">WhatsApp (opcional)</label><div class="input-wrap"><span class="ic">📱</span><input id="swa" type="tel" autocomplete="tel" placeholder="11999999999"></div></div>
-    <button class="btn prim" id="criarModal" style="width:100%;margin-top:8px">Criar conta</button>
+    <button class="btn prim" id="criarModal" onclick="doSignup()" style="width:100%;margin-top:8px">Criar conta</button>
     <span class="msg" id="msgModal"></span>
   </div>
 </div>
@@ -528,6 +528,21 @@ if(sb){
   });
 }else{$("#land").hidden=true;$("#deslogado").hidden=true;$("#app").hidden=false}
 
+window.doSignup=function(){
+  if(!sb){$("#msgModal").textContent="Supabase não carregou.";return;}
+  sb.auth.signUp({email:$("#sem").value,password:$("#ses").value})
+    .then(function(x){
+      if(x.error){$("#msgModal").textContent=x.error.message;return}
+      $("#msgModal").textContent="Conta criada.";
+      var wa=$("#swa").value.trim();
+      if(wa){ setTimeout(function(){sendWhatsApp(wa)},600); }
+      setTimeout(function(){
+        window.location.hash="";
+        $("#land").hidden=true;
+        $("#app").hidden=false;
+      },1200);
+    });
+};
 drawAll();render();showTip();showMotiv();
 })();
 </script>
