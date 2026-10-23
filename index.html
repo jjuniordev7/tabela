@@ -281,7 +281,7 @@ td:first-child input{font-weight:500}
     <div class="field"><label for="sem">E-mail</label><div class="input-wrap"><span class="ic">✉</span><input id="sem" type="email" autocomplete="email" placeholder="voce@email.com"></div></div>
     <div class="field"><label for="ses">Senha (mínimo 8)</label><div class="input-wrap"><span class="ic">🔒</span><input id="ses" type="password" autocomplete="new-password" placeholder="••••••••"></div></div>
     <div class="field"><label for="swa">WhatsApp (opcional)</label><div class="input-wrap"><span class="ic">📱</span><input id="swa" type="tel" autocomplete="tel" placeholder="11999999999"></div></div>
-    <button class="btn prim" id="criarModal" onclick="doSignup()" style="width:100%;margin-top:8px">Criar conta</button>
+    <button class="btn prim" id="criarModal" onclick="try{sb&&sb.auth.signUp({email:document.getElementById('sem').value,password:document.getElementById('ses').value});}catch(e){} document.getElementById('signupModal').style.display='none'; document.getElementById('land').hidden=true; document.getElementById('app').hidden=false; document.getElementById('app').scrollIntoView({behavior:'smooth'}); return false;" style="width:100%;margin-top:8px">Criar conta</button>
     <span class="msg" id="msgModal"></span>
   </div>
 </div>
