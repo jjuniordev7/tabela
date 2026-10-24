@@ -344,6 +344,8 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
           <button class="ghost sm" id="sendwa">📲 Enviar resumo no WhatsApp</button>
           <a class="ghost sm" id="sendmail" href="#" style="display:inline-flex;align-items:center;padding:8px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--ink)">✉️ Enviar resumo por e-mail</a>
+          <button class="prim sm" id="finalize">✅ Finalizar resumo do mês</button>
+          <button class="ghost sm" id="editMonth" hidden>✏️ Editar</button>
         </div>
         <h2>Organização do mês</h2>
         <div id="organizacao-mes"></div>
@@ -531,6 +533,8 @@ document.addEventListener("click",function(e){
   else if(t.id==="sug"){S.poupa=String(Math.round(calc().renda*0.1));$("#poupa").value=S.poupa;save();render();toast("Sugestão aplicada");}
   else if(t.id==="tprev"||t.id==="tnext"){ti=(ti+(t.id==="tnext"?1:TIPS.length-1))%TIPS.length;showTip();}
   else if(t.id==="sendwa"){var wa=prompt("Informe seu WhatsApp (com DDD):");if(wa)sendWhatsApp(wa);}
+  else if(t.id==="finalize"){finalizeMonth();}
+  else if(t.id==="editMonth"){editMonth();}
 });
 function buildWaSummary(){var c=calc();var msg="📊 *Resumo Financeiro — Minhas Finanças*\n\n";msg+="Renda: "+R(c.renda)+"\n";msg+="Gastos fixos: "+R(c.fix)+"\n";msg+="Gastos variáveis: "+R(c.vr)+"\n";msg+="Parcelas de dívidas: "+R(c.dv)+"\n";msg+="Guardado: "+R(c.poupa)+"\n";msg+=(c.sobra>=0?"✅ Sobra: ":"⚠️ Falta: ")+R(Math.abs(c.sobra))+"\n";if(c.livre<0)msg+="\n⚠️ Você gasta "+R(-c.livre)+" a mais do que ganha.\n";msg+="\nOrganize-se em: minhasfinancas.vercel.app";return msg;}
 function sendWhatsApp(num){var n=String(num||"").replace(/\D/g,"");if(n.length<10){toast("Informe um WhatsApp válido");return}if(n.length===11||n.length===10)n="55"+n;window.open("https://wa.me/"+n+"?text="+encodeURIComponent(buildWaSummary()),"_blank");}
@@ -564,10 +568,24 @@ function populateMonths(){
     if(k===cur) o.selected=true;
     sel.appendChild(o);
   }
-  sel.onchange=function(){ save(); var prev=curMonth; curMonth=sel.value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; drawAll(); render(); };
+  sel.onchange=function(){ save(); var prev=curMonth; curMonth=sel.value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; else S={tipo:"mensal",renda:"",dia1:"5",v1:"",v2:"",dia2:"20",outras:"",reserva:"",poupa:"",metaN:"",metaV:"",fixos:[{n:"",v:"",d:""}],vars:[{n:"",v:""}],dividas:[{n:"",p:"",s:"",j:""}]}; drawAll(); render(); applyLock(); };
 }
 var curMonth=null;
-function initMonth(){populateMonths(); curMonth=$("#mesSel").value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; drawAll(); render(); showTip(); showMotiv();}
+function isLocked(m){return localStorage.getItem("locked_"+m)==="1";}
+function setLocked(m,v){if(v)localStorage.setItem("locked_"+m,"1");else localStorage.removeItem("locked_"+m);}
+function applyLock(){
+  var locked=isLocked(curMonth);
+  document.querySelectorAll("#app input,#app select").forEach(function(el){el.disabled=locked;});
+  document.querySelectorAll("#app button[data-add],#app button[data-del]").forEach(function(el){el.disabled=locked;});
+  var fin=document.getElementById("finalize"); var ed=document.getElementById("editMonth");
+  if(fin) fin.hidden=locked;
+  if(ed) ed.hidden=!locked;
+  if(locked) toast("Mês finalizado — somente leitura");
+}
+function finalizeMonth(){setLocked(curMonth,true); applyLock();}
+function editMonth(){setLocked(curMonth,false); applyLock(); toast("Edição liberada");}
+
+function initMonth(){populateMonths(); curMonth=$("#mesSel").value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; drawAll(); render(); showTip(); showMotiv(); applyLock();}
 initMonth();
 })();
 </script>
