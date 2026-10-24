@@ -176,7 +176,8 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-<div class="wrap">
+<!-- LANDING -->
+<div id="landing">
 <nav class="nav">
   <div class="brand"><span class="dot"></span>Minhas Finanças</div>
   <div class="navl">
@@ -295,6 +296,8 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
   </div>
 </section>
 
+</div>
+
 <!-- APP PANEL -->
   <div style="max-width:1280px;margin:0 auto;padding:40px 24px 0">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
@@ -308,7 +311,7 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
     <p class="hint">Preencha os dados e veja o resultado na hora.</p>
     <div class="appgrid" style="margin-top:24px">
       <div class="box">
-        <h2>Renda</h2>
+        <h2>💰 Renda</h2>
         <label for="tipo">Como você recebe?</label>
         <select id="tipo" data-f="tipo"><option value="mensal">Todo mês (uma vez)</option><option value="q">Quinzenal (duas vezes por mês)</option></select>
         <div id="f-m"><label for="renda">Renda líquida do mês (R$)</label><input id="renda" data-f="renda" inputmode="decimal" placeholder="ex.: 5.000,00"></div>
@@ -324,7 +327,7 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
           <div><label for="outras">Outras rendas (R$)</label><input id="outras" data-f="outras" inputmode="decimal" placeholder="0,00"></div>
           <div><label for="reserva">Reserva de emergência (R$)</label><input id="reserva" data-f="reserva" inputmode="decimal" placeholder="0,00"></div>
         </div>
-        <h2>Gastos fixos</h2>
+        <h2>?? Gastos fixos</h2>
         <div class="wx"><table><thead><tr><th>Nome</th><th>Valor (R$)</th><th>Dia venc.</th><th></th></tr></thead><tbody id="b-fixos"></tbody></table></div>
         <button class="ghost sm" data-add="fixos">+ Adicionar gasto fixo</button>
         <h2>Gastos variáveis</h2>
@@ -335,7 +338,7 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
         <button class="ghost sm" data-add="dividas">+ Adicionar dívida</button>
       </div>
       <div class="box" aria-live="polite">
-        <h2>Resultado</h2>
+        <h2>?? Resultado</h2>
         <div id="resultado-total"></div>
         <canvas id="chartGastos" height="220" style="margin:12px 0"></canvas>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
@@ -543,9 +546,9 @@ if(sb){
   $("#entrar")&&($("#entrar").onclick=function(){sb.auth.signInWithPassword({email:$("#em").value,password:$("#se").value}).then(function(x){setMsg(x.error?"E-mail ou senha incorretos.":"Logado com sucesso.");if(!x.error){sb.auth.getSession().then(function(s){user=s.data.session?s.data.session.user:null;if(user){$("#land")&&($("#land").hidden=true);$("#app").hidden=false;cloudLoad();}});}});});
   sb.auth.onAuthStateChange(function(ev,session){user=session?session.user:null;if(user){$("#land")&&($("#land").hidden=true);$("#app").hidden=false;$("#email-atual")&&($("#email-atual").textContent=user.email);cloudLoad();}});
 }
-window.doSignup=function(){if(sb){sb.auth.signUp({email:$("#sem").value,password:$("#ses").value});}window.location.hash="";var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} document.getElementById("signupModal").style.display="none";};
+window.doSignup=function(){if(sb){sb.auth.signUp({email:$("#sem").value,password:$("#ses").value});}window.location.hash="";var landing=document.getElementById("landing"); if(landing) landing.hidden=true; var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} var m=document.getElementById("signupModal"); if(m) m.style.display="none";};
 
-window.doLogin=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.signInWithPassword({email:$("#lem").value,password:$("#lse").value}).then(function(x){if(x.error){$("#msgLogin").textContent="E-mail ou senha incorretos.";return;}$("#msgLogin").textContent="Logado!";window.location.hash="";var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} document.getElementById("loginModal").style.display="none";});};
+window.doLogin=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.signInWithPassword({email:$("#lem").value,password:$("#lse").value}).then(function(x){if(x.error){$("#msgLogin").textContent="E-mail ou senha incorretos.";return;}$("#msgLogin").textContent="Logado!";window.location.hash="";var landing=document.getElementById("landing"); if(landing) landing.hidden=true; var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} document.getElementById("loginModal").style.display="none";});};
 window.forgotPwd=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.resetPasswordForEmail($("#lem").value).then(function(x){$("#msgLogin").textContent=x.error?"Erro ao enviar.": "Link de redefinição enviado para o e-mail."});};
 /* month selector */
 var MONTHS=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -570,3 +573,4 @@ initMonth();
 </script>
 </body>
 </html>
+
