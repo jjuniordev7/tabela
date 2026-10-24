@@ -300,9 +300,10 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
 
 <!-- APP PANEL -->
   <div style="max-width:1280px;margin:0 auto;padding:40px 24px 0">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <label for="mesSel" style="margin:0">Mês de referência</label>
-      <select id="mesSel" style="width:auto;margin:0"></select>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(10px)">
+      <span style="font-size:1.4rem">📅</span>
+      <label for="mesSel" style="margin:0;font-size:.9rem;color:var(--ink);font-weight:600">Mês de referência</label>
+      <select id="mesSel" style="width:auto;margin:0;min-width:180px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);padding:10px 36px 10px 14px;border-radius:12px;font-weight:600"></select>
     </div>
   </div>
   <section id="app" hidden>
@@ -344,8 +345,6 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
           <button class="ghost sm" id="sendwa">📲 Enviar resumo no WhatsApp</button>
           <a class="ghost sm" id="sendmail" href="#" style="display:inline-flex;align-items:center;padding:8px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--ink)">✉️ Enviar resumo por e-mail</a>
-          <button class="prim sm" id="finalize">✅ Finalizar resumo do mês</button>
-          <button class="ghost sm" id="editMonth" hidden>✏️ Editar</button>
         </div>
         <h2>Organização do mês</h2>
         <div id="organizacao-mes"></div>
@@ -364,7 +363,19 @@ footer{max-width:1280px;margin:0 auto;padding:60px 24px 40px;border-top:1px soli
           <button class="ghost sm" id="tprev">← Anterior</button>
           <button class="ghost sm" id="tnext">Próxima →</button>
         </div>
-        <div class="alert" style="margin-top:20px"><strong>Aviso:</strong> ferramenta educativa. Não substitui um profissional certificado.</div>
+  <div class="alert" style="margin-top:20px"><strong>Aviso:</strong> ferramenta educativa. Não substitui um profissional certificado.</div>
+      </div>
+    </div>
+  </div>
+  <div style="max-width:1280px;margin:24px auto 0;padding:0 24px 40px">
+    <div style="background:linear-gradient(135deg,rgba(124,255,203,.08),rgba(110,168,255,.08));border:1px solid rgba(124,255,203,.2);border-radius:22px;padding:28px;text-align:center">
+      <h2 style="margin:0 0 8px">🎯 Meta do mês</h2>
+      <p style="color:var(--mut);margin:0 0 16px">Guardar um pouco todo mês é o segredo. Comece com 10% da renda.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="prim sm" id="finalize">✅ Finalizar resumo do mês</button>
+        <button class="ghost sm" id="editMonth" hidden>✏️ Editar</button>
+        <button class="ghost sm" id="sendwa2">📲 Enviar resumo no WhatsApp</button>
+        <a class="ghost sm" id="sendmail2" href="#" style="display:inline-flex;align-items:center;padding:8px 14px;border:1px solid var(--line);border-radius:999px;text-decoration:none;color:var(--ink)" onclick="this.href='mailto:?subject=Resumo%20Financeiro&body='+encodeURIComponent(buildWaSummary().replace(/\*/g,''))">✉️ Enviar por e-mail</a>
       </div>
     </div>
   </div>
@@ -533,6 +544,7 @@ document.addEventListener("click",function(e){
   else if(t.id==="sug"){S.poupa=String(Math.round(calc().renda*0.1));$("#poupa").value=S.poupa;save();render();toast("Sugestão aplicada");}
   else if(t.id==="tprev"||t.id==="tnext"){ti=(ti+(t.id==="tnext"?1:TIPS.length-1))%TIPS.length;showTip();}
   else if(t.id==="sendwa"){var wa=prompt("Informe seu WhatsApp (com DDD):");if(wa)sendWhatsApp(wa);}
+  else if(t.id==="sendwa2"){var wa2=prompt("Informe seu WhatsApp (com DDD):");if(wa2)sendWhatsApp(wa2);}
   else if(t.id==="finalize"){finalizeMonth();}
   else if(t.id==="editMonth"){editMonth();}
 });
@@ -568,7 +580,7 @@ function populateMonths(){
     if(k===cur) o.selected=true;
     sel.appendChild(o);
   }
-  sel.onchange=function(){ save(); var prev=curMonth; curMonth=sel.value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; else S={tipo:"mensal",renda:"",dia1:"5",v1:"",v2:"",dia2:"20",outras:"",reserva:"",poupa:"",metaN:"",metaV:"",fixos:[{n:"",v:"",d:""}],vars:[{n:"",v:""}],dividas:[{n:"",p:"",s:"",j:""}]}; drawAll(); render(); applyLock(); };
+  sel.onchange=function(){ save(); var prev=curMonth; curMonth=sel.value; S={tipo:"mensal",renda:"",dia1:"5",v1:"",v2:"",dia2:"20",outras:"",reserva:"",poupa:"",metaN:"",metaV:"",fixos:[{n:"",v:"",d:""}],vars:[{n:"",v:""}],dividas:[{n:"",p:"",s:"",j:""}]}; drawAll(); render(); applyLock(); };
 }
 var curMonth=null;
 function isLocked(m){return localStorage.getItem("locked_"+m)==="1";}
@@ -585,7 +597,7 @@ function applyLock(){
 function finalizeMonth(){setLocked(curMonth,true); applyLock();}
 function editMonth(){setLocked(curMonth,false); applyLock(); toast("Edição liberada");}
 
-function initMonth(){populateMonths(); curMonth=$("#mesSel").value; var sv=JSON.parse(localStorage.getItem(monthKey(curMonth))||"null"); if(sv) for(var k in S) if(sv[k]!==undefined) S[k]=sv[k]; drawAll(); render(); showTip(); showMotiv(); applyLock();}
+function initMonth(){populateMonths(); curMonth=$("#mesSel").value; S={tipo:"mensal",renda:"",dia1:"5",v1:"",v2:"",dia2:"20",outras:"",reserva:"",poupa:"",metaN:"",metaV:"",fixos:[{n:"",v:"",d:""}],vars:[{n:"",v:""}],dividas:[{n:"",p:"",s:"",j:""}]}; drawAll(); render(); showTip(); showMotiv(); applyLock();}
 initMonth();
 })();
 </script>
