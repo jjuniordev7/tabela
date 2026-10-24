@@ -544,11 +544,11 @@ function cloudLoad(){return sb.from("financas").select("dados").eq("user_id",use
 if(sb){
   var setMsg=function(t){$("#msgModal").textContent=t};
   $("#entrar")&&($("#entrar").onclick=function(){sb.auth.signInWithPassword({email:$("#em").value,password:$("#se").value}).then(function(x){setMsg(x.error?"E-mail ou senha incorretos.":"Logado com sucesso.");if(!x.error){sb.auth.getSession().then(function(s){user=s.data.session?s.data.session.user:null;if(user){$("#land")&&($("#land").hidden=true);$("#app").hidden=false;cloudLoad();}});}});});
-  sb.auth.onAuthStateChange(function(ev,session){user=session?session.user:null;if(user){$("#land")&&($("#land").hidden=true);$("#app").hidden=false;$("#email-atual")&&($("#email-atual").textContent=user.email);cloudLoad();}});
+  sb.auth.onAuthStateChange(function(ev,session){user=session?session.user:null;if(user){var l=document.getElementById("landing"); if(l){l.hidden=true;l.style.display="none";}$("#app").hidden=false;$("#email-atual")&&($("#email-atual").textContent=user.email);cloudLoad();}});
 }
-window.doSignup=function(){if(sb){sb.auth.signUp({email:$("#sem").value,password:$("#ses").value});}window.location.hash="";var landing=document.getElementById("landing"); if(landing) landing.hidden=true; var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} var m=document.getElementById("signupModal"); if(m) m.style.display="none";};
+window.doSignup=function(){if(sb){sb.auth.signUp({email:$("#sem").value,password:$("#ses").value});}window.location.hash="";var landing=document.getElementById("landing"); if(landing){landing.hidden=true;landing.style.display="none";} var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} var m=document.getElementById("signupModal"); if(m) m.style.display="none";};
 
-window.doLogin=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.signInWithPassword({email:$("#lem").value,password:$("#lse").value}).then(function(x){if(x.error){$("#msgLogin").textContent="E-mail ou senha incorretos.";return;}$("#msgLogin").textContent="Logado!";window.location.hash="";var landing=document.getElementById("landing"); if(landing) landing.hidden=true; var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} document.getElementById("loginModal").style.display="none";});};
+window.doLogin=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.signInWithPassword({email:$("#lem").value,password:$("#lse").value}).then(function(x){if(x.error){$("#msgLogin").textContent="E-mail ou senha incorretos.";return;}$("#msgLogin").textContent="Logado!";window.location.hash="";var landing=document.getElementById("landing"); if(landing){landing.hidden=true;landing.style.display="none";} var app=document.getElementById("app"); if(app){app.hidden=false;app.scrollIntoView({behavior:"smooth"});} document.getElementById("loginModal").style.display="none";});};
 window.forgotPwd=function(){if(!sb){$("#msgLogin").textContent="Supabase não carregou.";return;}sb.auth.resetPasswordForEmail($("#lem").value).then(function(x){$("#msgLogin").textContent=x.error?"Erro ao enviar.": "Link de redefinição enviado para o e-mail."});};
 /* month selector */
 var MONTHS=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
@@ -573,4 +573,5 @@ initMonth();
 </script>
 </body>
 </html>
+
 
